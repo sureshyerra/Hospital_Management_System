@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/patient")
 public class patientController {
 
     HashMap<Integer, Patient> hashMap = new HashMap<>();
@@ -32,6 +33,28 @@ public class patientController {
         return "patient added succesfully";
 
 
+
+    }
+    @GetMapping("/getInfoViaPathVariable/{patientId}")
+    public Patient getPatient(@PathVariable("patientId")Integer patientId){
+
+        Patient patient = hashMap.get(patientId);
+
+        return patient;
+
+    }
+    @GetMapping("/getPatients/{age}/{disease}")
+
+    public  List<Patient> getPatients(@PathVariable("age")Integer age,@PathVariable("disease")String disease){
+
+        List<Patient> patients = new ArrayList<>();
+
+        for (Patient p : hashMap.values()){
+            if(p.getAge() > age && p.getDisease().equals(disease)){
+                patients.add(p);
+            }
+        }
+        return patients;
 
     }
     @GetMapping("/getPatientInfo")
@@ -74,6 +97,40 @@ public class patientController {
             }
         }
         return getpatients;
+    }
+    @PutMapping("/updatePatientDetails")
+    public String updatePatientDetails(@RequestBody Patient patient){
+
+        int key = patient.getPatientId();
+
+        if (hashMap.containsKey(key)){
+            hashMap.put(key,patient);
+            return "patient updated successfully";
+        }
+        else {
+            return "data not existing";
+        }
+    }
+    @PutMapping("/updatedisease")
+    public String updatedisease(@RequestParam("patientId")Integer patientId,@RequestParam("disease")String disease)
+    {
+        if(hashMap.containsKey(patientId)){
+            Patient patient  = hashMap.get(patientId);
+            patient.setDisease(disease);
+
+            hashMap.put(patientId,patient);
+            return "updated succesfully";
+        }
+        return "patient doesnot exist";
+
+    }
+    @DeleteMapping("/deletePatient")
+
+    public String deletePatient(@RequestParam("patientId")Integer patientId){
+
+        hashMap.remove(patientId);
+        return "patient deleted succcesfully";
+
     }
 
 
